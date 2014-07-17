@@ -82,7 +82,7 @@ writeWebGL <- function(dir="webGL", filename=file.path(dir, "index.html"),
   }
   
   header <- function() subst(
-    '	<script src="CanvasMatrix.js" type="text/javascript"></script>
+    '<script src="CanvasMatrix.js" type="text/javascript"></script>
     <canvas id="%prefix%textureCanvas" style="display: none;" width="256" height="256">
     %snapshotimg%
     Your browser does not support the HTML5 canvas element.</canvas>
@@ -355,6 +355,7 @@ writeWebGL <- function(dir="webGL", filename=file.path(dir, "index.html"),
     this.panCallbacks = [];
     this.fovCallbacks = [];
     this.zoomCallbacks = [];
+    this.clickCallbacks = [];
     this.fov = 1;
     };
     
@@ -1337,6 +1338,9 @@ writeWebGL <- function(dir="webGL", filename=file.path(dir, "index.html"),
     
     return {x:canvasX, y:canvasY}
                 }
+
+    var startX = -1
+    var startY = -1
     
     canvas.onmousedown = function ( ev ){
     if (!ev.which) // Use w3c defns in preference to MS
@@ -1346,6 +1350,8 @@ writeWebGL <- function(dir="webGL", filename=file.path(dir, "index.html"),
     case 4: ev.which = 2; break;
     case 2: ev.which = 3;
     }
+    startX = ev.clientX;
+    startY = ev.clientY;
     drag = ev.which;
     var f = mousedown[drag-1];
     if (f) {
@@ -1356,6 +1362,14 @@ writeWebGL <- function(dir="webGL", filename=file.path(dir, "index.html"),
     }    
     
     canvas.onmouseup = function ( ev ){	
+    if (ev.button == 0 && Math.abs(ev.clientX - startX) <= 1 && Math.abs(ev.clientY - startY) <= 1) {
+    // broken code, does not compute the relative mouse position correctly
+    //var coords = relMouseCoords(ev);
+    //self.setClick(coords.x, height-coords.y);
+
+    self.setClick(ev.pageX - $("#%prefix%canvas").offset().left,
+        ev.pageY - $("#%prefix%canvas").offset().top);
+    }
     drag = 0;
     }
     
@@ -1403,6 +1417,12 @@ writeWebGL <- function(dir="webGL", filename=file.path(dir, "index.html"),
     this.fovCallbacks[i](this.fov);
     }
     }
+
+    this.setClick = function(x, y){
+    for (var i = 0; i < this.clickCallbacks.length; i++){
+    this.clickCallbacks[i](x, y);
+    }
+    }
     
     this.getZoom = function(){
     return this.zoom;
@@ -1426,6 +1446,10 @@ writeWebGL <- function(dir="webGL", filename=file.path(dir, "index.html"),
     
     this.onFOV = function(callback){
     this.fovCallbacks.push(callback);
+    }
+
+    this.onClick = function(callback){
+    this.clickCallbacks.push(callback);
     }
     
     }).call(%prefix%WebGLClass.prototype);
