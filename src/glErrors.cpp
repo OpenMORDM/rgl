@@ -2,10 +2,16 @@
 // This file is part of RGL.
 //
 
-#include "opengl.hpp"
+#include "opengl.h"
 #include "R.h"
+#include "platform.h"
 
+namespace rgl {
 int SaveErrnum = GL_NO_ERROR;
+}
+
+using namespace rgl;
+
 static const char * SaveFile;
 static int SaveLine;
 

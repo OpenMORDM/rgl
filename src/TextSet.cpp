@@ -1,11 +1,13 @@
-#include "TextSet.hpp"
+#include "TextSet.h"
 
-#include "glgui.hpp"
+#include "glgui.h"
 #include "R.h"
 #ifdef HAVE_FREETYPE
-#include "Viewpoint.hpp"
 #include <map>
 #endif
+
+using namespace rgl;
+
 //////////////////////////////////////////////////////////////////////////////
 //
 // CLASS

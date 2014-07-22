@@ -1,5 +1,7 @@
-#include "Surface.hpp"
-#include "Material.hpp"
+#include "Surface.h"
+#include "Material.h"
+
+using namespace rgl;
 
 //////////////////////////////////////////////////////////////////////////////
 //
@@ -59,6 +61,8 @@ Surface::Surface(Material& in_material, int in_nx, int in_nz, double* in_x, doub
 
       vertexArray[iy] = v;
 
+      boundingBox += v;
+	
       if ( user_normals ) {
         *x = (float) in_normal_x[iy];
         *y = (float) in_normal_y[iy];
@@ -77,49 +81,58 @@ Surface::Surface(Material& in_material, int in_nx, int in_nz, double* in_x, doub
           texCoordArray[iy].t = in_texture_t[iy];
         }
       }
-
-      boundingBox += v;
     }
   }
-  
+  use_normal    = user_normals || material.lit || ( material.texture && material.texture->is_envmap() );
+  if ( use_normal && !user_normals ) {
+    normalArray.alloc(nvertex);
+    iy = 0;
+    for(int iz=0;iz<nz;iz++) 
+      for(int ix=0;ix<nx;ix++,iy++) 
+        normalArray[iy] = getNormal(ix, iz);
+  }    
   use_texcoord  = user_textures || ( material.texture && !(material.texture->is_envmap() ) ); 
-  use_normal    = !user_normals && ( material.lit || ( (material.texture) && (material.texture->is_envmap() ) ) );
   if ((material.point_antialias && ( material.front == material.POINT_FACE 
                                   || material.back  == material.POINT_FACE))
    || (material.line_antialias  && ( material.front == material.LINE_FACE 
                                   || material.back  == material.LINE_FACE))) blended = true;
 }
 
-void Surface::setNormal(int ix, int iz)
+Vertex Surface::getNormal(int ix, int iz)
 {
-  Vertex n[4];
-
   int i = iz*nx + ix;
-  int num = 0;
-  
+  Vertex total(0.0f,0.0f,0.0f);  
   if (!vertexArray[i].missing()) {
-    if (ix < nx-1 && !vertexArray[i+1].missing() ) {
-      if (iz > 0 && !vertexArray[i-nx].missing() )     // right/top
-        n[num++] = vertexArray.getNormal(i, i+1, i-nx );
-      if (iz < nz-1 && !vertexArray[i+nx].missing() )  // right/bottom
-        n[num++] = vertexArray.getNormal(i, i+nx, i+1 );
+    // List the 8 surrounding vertices.  Repat the 1st one to make looping simpler. 
+    int ind[9];  
+    int xv[9] =  {    1,     1,      0,    -1,     -1,   -1,     0,      1,      1   };
+    int zv[9] =  {    0,     -1,     -1,   -1,     0,    1,      1,      1,      0   };    
+    int okay[9];  /* checks of surrounding vertices from right counterclockwise */
+    for (int j=0; j<8; j++) {
+      int xval = ix + xv[j], zval = iz + zv[j];
+      if (0 <= xval && xval < nx && 0 <= zval && zval < nz) {
+        ind[j] = i + xv[j] + zv[j]*nx; 
+        okay[j] = !vertexArray[ind[j]].missing();
+      } else {
+        okay[j] = 0;
+	ind[j] = 0;
+      }
     }
-    if (ix > 0 && !vertexArray[i-1].missing() ) { 
-      if (iz > 0 && !vertexArray[i-nx].missing() )     // left/top
-        n[num++] = vertexArray.getNormal(i, i-nx, i-1 );
-      if (iz < nz-1 && !vertexArray[i+nx].missing() )  // left/bottom
-        n[num++] = vertexArray.getNormal(i, i-1, i+nx );
-    }
+    okay[8] = okay[0];
+    ind[8] = ind[0];
+    /* Estimate normal by averaging cross-product in successive triangular sectors */
+    for (int j=0; j<8; j++) {
+      if (okay[j] && okay[j+1] ) 
+        total += vertexArray.getNormal(i, ind[j], ind[j+1] );
+    } 
+    total.normalize();
   }
-  Vertex total(0.0f,0.0f,0.0f);
-
-  for(i=0;i<num;i++)
-    total += n[i];
-
-  total.normalize();
-
-  if (orientation) glNormal3f(-total.x,-total.y,-total.z);
-  else glNormal3f(total.x,total.y,total.z);    
+  if (orientation) {
+    total.x = -total.x;
+    total.y = -total.y;
+    total.z = -total.z;
+  }
+  return total;
 }
 
 void Surface::draw(RenderContext* renderContext)
@@ -144,13 +157,9 @@ void Surface::draw(RenderContext* renderContext)
         // If orientation == 1, we draw iz+1 first, otherwise iz first      
         i = (iz+  orientation)*nx+ix;
   
-        if (use_normal)
-          setNormal(ix, iz+orientation);
         glArrayElement( i );
   
         i = (iz+ !orientation)*nx+ix;
-        if (use_normal)
-          setNormal(ix, iz+!orientation);
         glArrayElement( i );
       }
     }
@@ -198,7 +207,7 @@ void Surface::drawBegin(RenderContext* renderContext)
   if (use_texcoord)
     texCoordArray.beginUse();
     
-  if (user_normals)
+  if (use_normal)
     normalArray.beginUse();
 
 }
@@ -219,8 +228,6 @@ void Surface::drawElement(RenderContext* renderContext, int index)
           iz = s / nx + !j;
         else
           iz = s / nx + j;
-        if (use_normal)
-          setNormal(ix, iz);
         glArrayElement( iz*nx + ix );       
       }
     }
@@ -231,7 +238,7 @@ void Surface::drawElement(RenderContext* renderContext, int index)
 void Surface::drawEnd(RenderContext* renderContext) 
 {
 
-  if (user_normals)
+  if (use_normal)
     normalArray.endUse();
     
   if (use_texcoord)
@@ -248,7 +255,7 @@ int Surface::getAttributeCount(AABox& bbox, AttribID attrib)
 {
   switch (attrib) {
     case VERTICES: return nx*nz;
-    case NORMALS: if (user_normals)
+    case NORMALS: if (use_normal)
     		    return nx*nz;
     		  else
     		    return 0;

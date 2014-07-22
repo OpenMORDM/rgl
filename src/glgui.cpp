@@ -3,11 +3,20 @@
 //
 // $Id$
 
+#include <cstdio>
+#ifdef HAVE_FREETYPE
+#include "FTGL/ftgl.h"
+#include "R.h"
+#endif
 #include "types.h"
-#include "glgui.hpp"
+#include "glgui.h"
 #include "gl2ps.h"
-#include "opengl.hpp"
-#include "RenderContext.hpp"
+#include "opengl.h"
+#include "RenderContext.h"
+#include "subscene.h"
+#include "platform.h"
+
+using namespace rgl;
 
 //
 // CLASS
@@ -39,7 +48,7 @@ GLboolean GLFont::justify(double width, double height, double adjx, double adjy,
     glGetDoublev(GL_CURRENT_RASTER_POSITION, pos);    
     pos[0] = pos[0] - scaling*width*(adjx-basex); 
     pos[1] = pos[1] - scaling*height*(adjy-basey);
-    gluUnProject( pos[0], pos[1], pos[2], rc.modelview, rc.projection, rc.viewport, pos2, pos2 + 1, pos2 + 2);
+    gluUnProject( pos[0], pos[1], pos[2], rc.subscene->modelMatrix, rc.subscene->projMatrix, rc.subscene->pviewport, pos2, pos2 + 1, pos2 + 2);
     glRasterPos3dv(pos2);
   }
   
@@ -115,9 +124,6 @@ void GLBitmapFont::draw(const wchar_t* text, int length,
 }
 
 #ifdef HAVE_FREETYPE
-
-#include "FTGL/ftgl.h"
-#include "R.h"
 
 GLFTFont::GLFTFont(const char* in_family, int in_style, double in_cex, const char* in_fontname) 
 : GLFont(in_family, in_style, in_cex, in_fontname, true)

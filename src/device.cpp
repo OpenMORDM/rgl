@@ -3,15 +3,19 @@
 //
 // $Id$
 // ---------------------------------------------------------------------------
-#include "Device.hpp"
-#include "lib.hpp"
+#include <cstring>
+#include "Device.h"
+#include "lib.h"
+
+using namespace rgl;
+
 // ---------------------------------------------------------------------------
 Device::Device(int id, bool useNULL) : id_(id)
 {
   scene   = new Scene();
   rglview = new RGLView(scene);
-  window  = new Window( rglview, lib::getGUIFactory(useNULL) );
-  devtype = lib::GUIFactoryName(useNULL);
+  window  = new Window( rglview, getGUIFactory(useNULL) );
+  devtype = GUIFactoryName(useNULL);
   window->addDisposeListener(this);
 }
 // ---------------------------------------------------------------------------

@@ -1,7 +1,11 @@
-using namespace std;
-#include "Texture.hpp"
 
+#include "Texture.h"
 #include "pixmap.h"
+#include "config.h"
+#include "platform.h"
+
+using namespace std;
+using namespace rgl;
 
 //////////////////////////////////////////////////////////////////////////////
 //
@@ -113,12 +117,13 @@ void Texture::getParameters(Type *out_type, bool *out_mipmap,
   strncpy(out_filename, filename, buflen);
 }
 
-unsigned int texsize(unsigned int s)
+#ifndef MODERN_OPENGL
+static unsigned int texsize(unsigned int s)
 {
   return 1U << msb(s-1);
 }
 
-#include "lib.hpp"
+#include "lib.h"
 
 static void printGluErrorMessage(GLint error) 
 {
@@ -126,8 +131,9 @@ static void printGluErrorMessage(GLint error)
   char buf[256];        
   gluError = gluErrorString (error);
   sprintf(buf, "GLU Library Error : %s", (const char*) gluError);
-  lib::printMessage(buf);
+  printMessage(buf);
 }
+#endif
 
 void Texture::init(RenderContext* renderContext)
 {
@@ -204,8 +210,13 @@ void Texture::init(RenderContext* renderContext)
   
   GLint glTexSize;
   glGetIntegerv(GL_MAX_TEXTURE_SIZE,  &glTexSize );        
-  unsigned int maxSize = static_cast<unsigned int>(glTexSize);
   
+  #ifdef MODERN_OPENGL
+  glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, pixmap->width, pixmap->height, 0, format, gl_type , pixmap->data);
+  if (mipmap)
+    glGenerateMipmap(GL_TEXTURE_2D);
+  #else
+  unsigned int maxSize = static_cast<unsigned int>(glTexSize);
   if (mipmap) {                  
     int gluError = gluBuild2DMipmaps(GL_TEXTURE_2D, internalFormat, pixmap->width, pixmap->height, format, gl_type, pixmap->data);    
     if (gluError)
@@ -217,7 +228,7 @@ void Texture::init(RenderContext* renderContext)
     if ( (width > maxSize) || (height > maxSize) ) {
       char buf[256];
       sprintf(buf, "GL Library : Maximum texture size of %dx%d exceeded.\n(Perhaps enabling mipmapping could help.)", maxSize,maxSize);
-      lib::printMessage(buf);
+      printMessage(buf);
     } else if ( (pixmap->width != width) || ( pixmap->height != height) ) {
       char* data = new char[width * height * bytesperpixel];
       int gluError = gluScaleImage(format, pixmap->width, pixmap->height, gl_type, pixmap->data, width, height, gl_type, data);
@@ -229,7 +240,8 @@ void Texture::init(RenderContext* renderContext)
       glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, pixmap->width, pixmap->height, 0, format, gl_type , pixmap->data);
     }
   }
-
+  #endif /* not MODERN_OPENGL */
+  
   if (envmap) {
     glTexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP);
     glTexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP);

@@ -1,4 +1,4 @@
-#include "lib.hpp"
+#include "lib.h"
 #include "types.h"
 #include <png.h>
 
@@ -7,13 +7,15 @@
 //
 // $Id$
 
+namespace rgl {
+
 class PNGPixmapFormat : public PixmapFormat {
 public:
   PNGPixmapFormat()
   {
   }
 
-  bool checkSignature(FILE* fd)
+  bool checkSignature(std::FILE* fd)
   {
     unsigned char buf[8];
 
@@ -23,7 +25,7 @@ public:
     return !png_sig_cmp(buf, 0, 8);
   }
 
-  bool load(FILE* fd, Pixmap* pixmap)
+  bool load(std::FILE* fd, Pixmap* pixmap)
   {
     Load load(fd, pixmap);
 
@@ -31,15 +33,15 @@ public:
       bool success;
       success = load.process();
       if (!success)
-        lib::printMessage("pixmap png loader: process failed");
+        printMessage("pixmap png loader: process failed");
       return success;
     } else {
-      lib::printMessage("pixmap png loader: init failed");
+      printMessage("pixmap png loader: init failed");
       return false;
     }
   }
 
-  bool save(FILE* fd, Pixmap* pixmap)
+  bool save(std::FILE* fd, Pixmap* pixmap)
   {
     Save save(fd, pixmap);
 
@@ -59,7 +61,7 @@ private:
   class Load {
   public:
 
-    Load(FILE* _file, Pixmap* _pixmap)
+    Load(std::FILE* _file, Pixmap* _pixmap)
     {
       file     = _file;
       pixmap   = _pixmap;
@@ -111,13 +113,13 @@ private:
     static void printError(const char* error_msg) {
       char buf[256];
       sprintf(buf, "PNG Pixmap Loader Error: %s", error_msg);
-      lib::printMessage(buf);
+      printMessage(buf);
     }
 
     static void printWarning(const char* warning_msg) {
       char buf[256];
       sprintf(buf, "PNG Pixmap Loader Warning: %s", warning_msg);
-      lib::printMessage(buf);
+      printMessage(buf);
     }
 
 
@@ -224,7 +226,7 @@ unsupported:
       sprintf(buffer,"%s%s format unsupported: %lux%lu (%d bits per channel)", 
               interlace_string, color_type_name, 
               (long unsigned int)width, (long unsigned int)height, bit_depth);
-      lib::printMessage(buffer);
+      printMessage(buffer);
       load->error = true;
       png_read_update_info(load->png_ptr,load->info_ptr);
       return;
@@ -274,20 +276,14 @@ unsupported:
 
     typedef void (PNGAPI *png_error_ptr) PNGARG((png_structp, png_const_charp));
 
-    FILE* file;
+    std::FILE* file;
     Pixmap* pixmap;
 
     png_structp png_ptr;
     png_infop info_ptr;
-    int bufsize;
     unsigned char buffer[4096];
     bool error;
     bool finish;
-
-    int width;
-    int height;
-    int bit_depth;
-
 
   };
 
@@ -299,7 +295,7 @@ unsupported:
 
   class Save {
   public:
-    Save(FILE* in_file, Pixmap* in_pixmap)
+    Save(std::FILE* in_file, Pixmap* in_pixmap)
     {
       file     = in_file;
       pixmap   = in_pixmap;
@@ -379,13 +375,13 @@ unsupported:
     static void printError(const char* error_msg) {
       char buf[256];
       sprintf(buf, "PNG Pixmap Saver Error: %s", error_msg);
-      lib::printMessage(buf);
+      printMessage(buf);
     }
 
     static void printWarning(const char* warning_msg) {
       char buf[256];
       sprintf(buf, "PNG Pixmap Saver Warning: %s", warning_msg);
-      lib::printMessage(buf);
+      printMessage(buf);
     }
 
 
@@ -404,7 +400,7 @@ unsupported:
     }
 
 
-    FILE* file;
+    std::FILE* file;
     Pixmap* pixmap;
 
     png_structp png_ptr;
@@ -414,3 +410,4 @@ unsupported:
 
 };
 
+} // namespace rgl

@@ -3,19 +3,18 @@
 
 #include "R.h"
 #include <Rinternals.h>
+#include "ABCLineSet.h"
+#include "PlaneSet.h"
+#include "SphereSet.h"
+#include "SpriteSet.h"
+#include "Surface.h"
+#include "TextSet.h"
+
+
+namespace rgl {
 
 #ifdef __cplusplus
 extern "C" {
-#endif
-
-/*
-// RGL API EXPORT MACRO
-*/
-
-#ifdef _WIN32
-#define EXPORT_SYMBOL   __declspec(dllexport)
-#else
-#define EXPORT_SYMBOL   extern
 #endif
 
 /*
@@ -32,103 +31,89 @@ extern "C" {
 
 /* library service */
 
-EXPORT_SYMBOL void rgl_quit          (int* successptr);
+void rgl_quit          (int* successptr);
 
 /* device management */
 
-EXPORT_SYMBOL void rgl_dev_open      (int* successptr, int* useNULL);
-EXPORT_SYMBOL void rgl_dev_close      (int* successptr);
-EXPORT_SYMBOL SEXP rgl_dev_getcurrent(void);
-EXPORT_SYMBOL SEXP rgl_dev_list        (void);
-EXPORT_SYMBOL void rgl_dev_setcurrent(int* successptr, int* idata);
-EXPORT_SYMBOL void rgl_dev_bringtotop(int* successptr, int* stay);
+void rgl_dev_open      (int* successptr, int* useNULL);
+void rgl_dev_close      (int* successptr);
+SEXP rgl_dev_getcurrent(void);
+SEXP rgl_dev_list        (void);
+void rgl_dev_setcurrent(int* successptr, int* idata);
+void rgl_dev_bringtotop(int* successptr, int* stay);
 
 /* device services */
 
-EXPORT_SYMBOL void rgl_snapshot (int* successptr, int* idata, char** cdata);
-EXPORT_SYMBOL void rgl_pixels(int* successptr, int* ll, int* size, int* component, float* result);
-EXPORT_SYMBOL void rgl_postscript (int* successptr, int* idata, char** cdata);
+void rgl_snapshot (int* successptr, int* idata, char** cdata);
+void rgl_pixels(int* successptr, int* ll, int* size, int* component, float* result);
+void rgl_postscript (int* successptr, int* idata, char** cdata);
 
 /* scene management */
 
-EXPORT_SYMBOL void rgl_clear    (int* successptr, int* idata);
-EXPORT_SYMBOL void rgl_pop      (int* successptr, int* idata);
-EXPORT_SYMBOL void rgl_id_count (int* type, int* count);
-EXPORT_SYMBOL void rgl_ids       (int* type, int* ids, char** types);
-EXPORT_SYMBOL void rgl_attrib_count (int* id, int* attrib, int* count);
-EXPORT_SYMBOL void rgl_attrib   (int* id, int* attrib, int* first, int* count, double* result);
-EXPORT_SYMBOL void rgl_text_attrib   (int* id, int* attrib, int* first, int* count, char** result);
+void rgl_clear    (int* successptr, int* idata);
+void rgl_pop      (int* successptr, int* idata);
+void rgl_id_count (int* type, int* count, int* subsceneID);
+void rgl_ids       (int* type, int* ids, char** types, int* subsceneID);
+void rgl_attrib_count (int* id, int* attrib, int* count);
+void rgl_attrib   (int* id, int* attrib, int* first, int* count, double* result);
+void rgl_text_attrib   (int* id, int* attrib, int* first, int* count, char** result);
 
-EXPORT_SYMBOL void rgl_material (int* successptr, int* idata, char** cdata, double* ddata);
-EXPORT_SYMBOL void rgl_getcolorcount(int* count);
-EXPORT_SYMBOL void rgl_getmaterial (int* successptr, int *id, int* idata, char** cdata, double* ddata);
+void rgl_material (int* successptr, int* idata, char** cdata, double* ddata);
+void rgl_getcolorcount(int* count);
+void rgl_getmaterial (int* successptr, int *id, int* idata, char** cdata, double* ddata);
 
-EXPORT_SYMBOL void rgl_light    (int* successptr, int* idata, double* ddata );
+void rgl_light    (int* successptr, int* idata, double* ddata );
 
-EXPORT_SYMBOL void rgl_viewpoint(int* successptr, int* idata, double* ddata);
+void rgl_viewpoint(int* successptr, int* idata, double* ddata);
 
-EXPORT_SYMBOL void rgl_bg       (int* successptr, int* idata);
-EXPORT_SYMBOL void rgl_bbox     (int* successptr, int* idata, double* ddata, double* xat, char** xtext, double* yat, char** ytext, double* zat, char** ztext);
+void rgl_bg       (int* successptr, int* idata);
+void rgl_bbox     (int* successptr, int* idata, double* ddata, double* xat, char** xtext, double* yat, char** ytext, double* zat, char** ztext);
 
-EXPORT_SYMBOL void rgl_primitive(int* successptr, int* idata, double* vertex, double* normals, double* texcoords);
-EXPORT_SYMBOL void rgl_texts    (int* successptr, int* idata, double* adj, char** text, double* vertex,
+void rgl_primitive(int* successptr, int* idata, double* vertex, double* normals, double* texcoords);
+void rgl_texts    (int* successptr, int* idata, double* adj, char** text, double* vertex,
                                  int* nfonts, char** family, int* style, double* cex, int* useFreeType);
-EXPORT_SYMBOL void rgl_spheres  (int* successptr, int* idata, double* vertex, double* radius);
-EXPORT_SYMBOL void rgl_planes   (int* successptr, int* idata, double* normals, double* offsets);
-EXPORT_SYMBOL void rgl_abclines (int* successptr, int* idata, double* bases, double* directions);
+void rgl_spheres  (int* successptr, int* idata, double* vertex, double* radius);
+void rgl_planes   (int* successptr, int* idata, double* normals, double* offsets);
+void rgl_clipplanes(int* successptr, int* idata, double* normals, double* offsets);
+void rgl_abclines (int* successptr, int* idata, double* bases, double* directions);
 
-EXPORT_SYMBOL void rgl_surface  (int* successptr, int* idata, double* x, double* z, double* y, 
+void rgl_surface  (int* successptr, int* idata, double* x, double* z, double* y, 
 	                         double* normal_x, double* normal_z, double* normal_y,
 	                         double* texture_s, double* texture_t,
 	                         int* coords, int* orientation, int* flags);
-EXPORT_SYMBOL void rgl_sprites  (int* successptr, int* idata, double* vertex, double* radius, int* shapes, double* userMatrix);
+void rgl_sprites  (int* successptr, int* idata, double* vertex, double* radius, int* shapes, double* userMatrix);
+void rgl_newsubscene (int* successptr, int* parentid, int* embedding, int* ignoreExtent);
+void rgl_setsubscene (int* id);
+void rgl_getsubsceneid (int* id, int* dev); /* On input, 0 for root, 1 for current */
+void rgl_getsubsceneparent(int* id);
+void rgl_getsubscenechildcount(int* id, int* n);
+void rgl_getsubscenechildren(int* id, int* children);
+void rgl_addtosubscene (int* successptr, int* count, int* ids);
+void rgl_delfromsubscene(int* successptr, int* count, int* ids);
+void rgl_gc(int* count, int* protect);
 
-EXPORT_SYMBOL void rgl_user2window(int* successptr, int* idata, double* point, double* pixel, double* model, double* proj, int* view);
-EXPORT_SYMBOL void rgl_window2user(int* successptr, int* idata, double* point, double* pixel, double* model, double* proj, int* view);
-EXPORT_SYMBOL void rgl_locator(int* successptr, double* locations);
-EXPORT_SYMBOL void rgl_getMouseMode(int* successptr, int* button, int* mode);
-EXPORT_SYMBOL void rgl_setMouseMode(int* successptr, int* button, int* mode);
-EXPORT_SYMBOL void rgl_selectstate(int* successptr, int* selectstate, double* locations);
-EXPORT_SYMBOL void rgl_setselectstate(int* successptr, int *idata);
-EXPORT_SYMBOL void rgl_getUserMatrix(int* successptr, double* userMatrix);
-EXPORT_SYMBOL void rgl_setUserMatrix(int* successptr, double* userMatrix);
-EXPORT_SYMBOL void rgl_getScale(int* successptr, double* scale);
-EXPORT_SYMBOL void rgl_setScale(int* successptr, double* scale);
-EXPORT_SYMBOL void rgl_getZoom(int* successptr, double* zoom);
-EXPORT_SYMBOL void rgl_setZoom(int* successptr, double* zoom);
-EXPORT_SYMBOL void rgl_getFOV(int* successptr, double* fov);
-EXPORT_SYMBOL void rgl_setFOV(int* successptr, double* fov);
-EXPORT_SYMBOL void rgl_getModelMatrix(int* successptr, double* modelMatrix);
-EXPORT_SYMBOL void rgl_getProjMatrix(int* successptr, double* projMatrix);
-EXPORT_SYMBOL void rgl_getIgnoreExtent(int* successptr, int* ignoreExtent);
-EXPORT_SYMBOL void rgl_setIgnoreExtent(int* successptr, int* ignoreExtent);
-EXPORT_SYMBOL void rgl_getSkipRedraw(int* successptr, int* skipRedraw);
-EXPORT_SYMBOL void rgl_setSkipRedraw(int* successptr, int* skipRedraw);
-EXPORT_SYMBOL void rgl_getViewport(int* successptr, int* viewport);
-EXPORT_SYMBOL void rgl_getBoundingbox(int* successptr, double* bboxvec);
-EXPORT_SYMBOL void rgl_getWindowRect(int* successptr, int* rect);
-EXPORT_SYMBOL void rgl_setWindowRect(int* successptr, int* rect);
+void rgl_user2window(int* successptr, int* idata, double* point, double* pixel, double* model, double* proj, int* view);
+void rgl_window2user(int* successptr, int* idata, double* point, double* pixel, double* model, double* proj, int* view);
+void rgl_locator(int* successptr, double* locations);
 
-/* not for users:  does not maintain consistency */
-EXPORT_SYMBOL void rgl_setPosition(double* position);
-EXPORT_SYMBOL void rgl_getPosition(double* position);
+void rgl_selectstate(int* successptr, int* selectstate, double* locations);
+void rgl_setselectstate(int* successptr, int *idata);
+void rgl_setEmbeddings(int* successptr, int* embeddings);
+void rgl_getEmbeddings(int* successptr, int* embeddings);
 
-/* These functions are related to the API, but only accessed internally */
+SEXP rgl_setMouseCallbacks(SEXP button, SEXP begin, SEXP update, SEXP end);
+SEXP rgl_setWheelCallback(SEXP rotate);
 
-char*   getFamily();
-bool    setFamily(const char *family);
-int     getFont();
-bool    setFont(int font);
-double  getCex();
-bool    setCex(double cex);
-int     getUseFreeType();
-bool    setUseFreeType(bool useFreeType);
-char*	getFontname();
-int	getAntialias();
+SEXP rgl_par3d(SEXP device, SEXP subscene, SEXP args);
 
+/* These may be removed if observer is set completely by par3d */
+void rgl_getObserver(int* successptr, double* ddata);
+void rgl_setObserver(int* successptr, double* ddata);
 #ifdef __cplusplus
 }
 #endif
+
+} // namespace rgl
 
 #endif /* RGL_API_H */
 

@@ -3,10 +3,11 @@
 //
 // $Id$
 // ---------------------------------------------------------------------------
-#include "gui.hpp"
-#include "lib.hpp"
-// ---------------------------------------------------------------------------
-namespace gui {
+#include "gui.h"
+#include "lib.h"
+
+using namespace rgl;
+
 // ---------------------------------------------------------------------------
 // WindowImpl common code
 // ---------------------------------------------------------------------------
@@ -285,5 +286,3 @@ void Window::getFonts(FontArray& outfonts, int nfonts, char** family, int* style
   windowImpl->getFonts(outfonts, nfonts, family, style, cex, useFreeType);
 }
 // ---------------------------------------------------------------------------
-} // namespace gui
-

@@ -1,4 +1,6 @@
-#include "Light.hpp"
+#include "Light.h"
+
+using namespace rgl;
 
 //////////////////////////////////////////////////////////////////////////////
 //
@@ -27,14 +29,14 @@ Light::Light( PolarCoord in_position, Vertex in_finposition,
   } else {
       Vertex v(0.0f, 0.0f, 1.0f);
     
-      v.rotateX( -in_position.phi );
-      v.rotateY(  in_position.theta );
+    v.rotateX( -in_position.phi );
+    v.rotateY(  in_position.theta );
     
-      position[0] = v.x;
-      position[1] = v.y;
-      position[2] = v.z;
+    position[0] = v.x;
+    position[1] = v.y;
+    position[2] = v.z;
     
-      position[3] = 0.0f;
+    position[3] = 0.0f;
   }
 }
 
@@ -92,11 +94,11 @@ void Light::getAttribute(AABox& bbox, AttribID attrib, int first, int count, dou
         *result++ = position[0];
         *result++ = position[1];
         *result++ = position[2];
-        *result++ = position[3];
         return;
       }
       case FLAGS: {
-        *result++ = (double) viewpoint;
+	if (first == 0)  
+          *result++ = (double) viewpoint;
         *result++ = (double) posisfinite;
         return;
       }

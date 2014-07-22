@@ -1,5 +1,12 @@
-#include "Shape.hpp"
+
+#include <algorithm>
+#include <functional>
+
+#include "Shape.h"
+#include "SceneNode.h"
 #include "R.h"
+
+using namespace rgl;
 
 //////////////////////////////////////////////////////////////////////////////
 //
@@ -90,6 +97,7 @@ int Shape::getAttributeCount(AABox& bbox, AttribID attrib)
   switch (attrib) { 
     case COLORS:  return material.colors.getLength();
     case CENTERS: return getElementCount();
+    case FLAGS:   return 1;
   }
   return 0;
 }
@@ -119,11 +127,14 @@ void Shape::getAttribute(AABox& bbox, AttribID attrib, int first, int count, dou
           first++;
         }
         return;
+      case FLAGS:
+        if (first == 0) *result++ = (double)ignoreExtent;
+        return;
     }
   }
 }
 
-Shape* get_shape_from_list(std::vector<Shape*> shapes, int id, bool recursive)
+Shape* rgl::get_shape_from_list(std::vector<Shape*> shapes, int id, bool recursive)
 {
   std::vector<Shape*>::iterator ishape;
 

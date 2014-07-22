@@ -5,9 +5,11 @@
 
 #include "fps.h"
 
-#include "glgui.hpp"
+#include "glgui.h"
 
 #include <cstdio>
+
+using namespace rgl;
 
 void FPS::init(double time)
 {

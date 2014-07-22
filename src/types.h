@@ -1,6 +1,7 @@
 #ifndef RGL_TYPES_H
 #define RGL_TYPES_H
 
+#include <cstring>
 #include "pragma.h"
 
 // C++ header file
@@ -8,8 +9,7 @@
 //
 // $Id$
 
-
-#include <cstring>
+namespace rgl {
 
 //
 //
@@ -76,6 +76,7 @@ private:
 class DestroyHandler
 {
 public:
+  virtual ~DestroyHandler();    
   virtual void notifyDestroy(void* userdata) = 0;
 };
 
@@ -154,6 +155,8 @@ inline int   getMax(int a, int b)     { return (a >= b) ? a : b; }
 inline float getMax(float a, float b) { return (a >= b) ? a : b; }
 inline float clamp(float v, float floor, float ceil) { return (v<floor) ? floor : ( (v>ceil) ? ceil : v ); }
 inline int   clamp(int   v, int   floor, int   ceil) { return (v<floor) ? floor : ( (v>ceil) ? ceil : v ); }
+
+} // namespace rgl
 
 #endif /* RGL_TYPES_H */
 

@@ -1,7 +1,7 @@
-#include "BBoxDeco.hpp"
+#include "BBoxDeco.h"
 
 #include "gl2ps.h"
-#include "glgui.hpp"
+#include "glgui.h"
 #include "scene.h"
 #include <cstdio>
 #include <cmath>
@@ -111,6 +111,8 @@ void Rpf(const char * msg)
   Rprintf("    Polygon modes: %X %X\n", modes[0], modes[1]);
  }  
 #endif 
+
+using namespace rgl;
 
 //////////////////////////////////////////////////////////////////////////////
 //
@@ -389,7 +391,7 @@ AABox BBoxDeco::getBoundingBox(const AABox& in_bbox) const
 
 void BBoxDeco::render(RenderContext* renderContext)
 {
-  AABox bbox = renderContext->scene->getBoundingBox();
+  AABox bbox = renderContext->subscene->getBoundingBox();
 
   if (bbox.isValid()) {
   
@@ -420,7 +422,7 @@ void BBoxDeco::render(RenderContext* renderContext)
 
     // transform vertices: used for edge distance criterion and text justification
 
-    Matrix4x4 modelview(renderContext->modelview);
+    Matrix4x4 modelview(renderContext->subscene->modelMatrix);
 
     for(i=0;i<8;i++)
       eyev[i] = modelview * boxv[i];
@@ -664,13 +666,9 @@ void BBoxDeco::render(RenderContext* renderContext)
         }
       }
     }
-
     material.endUse(renderContext);
-
     glPopAttrib();
-
   }
-
 }
 
 int BBoxDeco::getAttributeCount(AABox& bbox, AttribID attrib) 
@@ -682,10 +680,15 @@ int BBoxDeco::getAttributeCount(AABox& bbox, AttribID attrib)
            + ((zaxis.mode == AXIS_CUSTOM) ? zaxis.nticks : 0);
       if (count == 0) return 0; 
     }
+    /* if non-zero, we want labels for every vertex, so fall through. */
     case VERTICES:
       return xaxis.getNticks(bbox.vmin.x, bbox.vmax.x)
            + yaxis.getNticks(bbox.vmin.y, bbox.vmax.y)
            + zaxis.getNticks(bbox.vmin.z, bbox.vmax.z);
+    case COLORS:
+      return material.colors.getLength();
+    case FLAGS:
+      return 1;
   }
   return SceneNode::getAttributeCount(bbox, attrib);
 }
@@ -739,6 +742,18 @@ void BBoxDeco::getAttribute(AABox& bbox, AttribID attrib, int first, int count, 
         i++;  
       }
       return;
+    case COLORS:
+      while (first < n) {
+	Color color = material.colors.getColor(first);
+	*result++ = color.data[0];
+	*result++ = color.data[1];
+	*result++ = color.data[2];
+	*result++ = color.data[3];
+	first++;
+      }
+      return;
+    case FLAGS:
+      *result++ = (double) draw_front;	
     }
     SceneNode::getAttribute(bbox, attrib, first, count, result);
   }

@@ -1,22 +1,23 @@
-#include "config.hpp"
+
+#include <ctype.h>
+#include <Rinternals.h>
+#include "config.h"
 // C++ source
 // This file is part of RGL.
 //
 // $Id: win32gui.cpp 923 2013-01-27 10:41:11Z murdoch $
 
-#include "NULLgui.hpp"
+#include "NULLgui.h"
 
-#include "lib.hpp"
-#include "glgui.hpp"
+#include "lib.h"
+#include "glgui.h"
 
-#include "assert.hpp"
+#include "assert.h"
 #include "R.h"
-#include <Rinternals.h>
-
-#include <ctype.h>
 
 // ---------------------------------------------------------------------------
-namespace gui {
+
+namespace rgl {
 
 class NULLWindowImpl : public WindowImpl
 { 
@@ -45,6 +46,10 @@ public:
   void endGL() {};
   void swap() {};
 };
+
+} // namespace rgl
+
+using namespace rgl;
 // ----------------------------------------------------------------------------
 // constructor
 // ----------------------------------------------------------------------------
@@ -106,6 +111,4 @@ WindowImpl* NULLGUIFactory::createWindowImpl(Window* in_window)
   return impl;
 }
 // ---------------------------------------------------------------------------
-} // namespace gui
-
 

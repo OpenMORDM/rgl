@@ -1,9 +1,10 @@
-#include "Material.hpp"
-
 #include "gl2ps.h"
-#include "opengl.hpp"
-#include "Texture.hpp"
+#include "Material.h"
+#include "opengl.h"
+#include "Texture.h"
 #include "R.h"
+
+using namespace rgl;
 
 //////////////////////////////////////////////////////////////////////////////
 //
@@ -31,6 +32,11 @@ Material::Material(Color bg, Color fg)
   line_antialias(false),
   depth_mask(true),
   depth_test(1),  // "less"
+  textype(Texture::RGB),    
+  mipmap(false),
+  minfilter(1),
+  magfilter(1),
+  envmap(false),
   glVersion(-1.0)
 {
   alphablend = ( ( bg.getAlphaf() < 1.0f ) || ( fg.getAlphaf() < 1.0f ) ) ? true : false;

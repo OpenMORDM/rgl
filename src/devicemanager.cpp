@@ -3,12 +3,14 @@
 //
 // $Id$
 
-#include "DeviceManager.hpp"
-#include "types.h"
 #include <algorithm>
 #include <cstdio>
-#include "assert.hpp"
-#include "lib.hpp"
+#include "DeviceManager.h"
+#include "types.h"
+#include "assert.h"
+#include "lib.h"
+
+using namespace rgl;
 
 DeviceManager::DeviceManager(bool in_useNULLDevice) 
  : newID(1), devices(), current( devices.end() ), useNULLDevice(in_useNULLDevice)

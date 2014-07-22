@@ -1,9 +1,11 @@
-#include "Color.hpp"
+#include "Color.h"
 #include "types.h"
 
 using namespace std;
 #include <cstdlib>
 #include <cstring> // for memcpy
+
+using namespace rgl;
 
 //
 // COLOR UTILS
@@ -14,7 +16,7 @@ using namespace std;
 //   HexCharToNibble
 //
 
-u8 HexCharToNibble(char c) {
+static u8 HexCharToNibble(char c) {
   u8 nibble = 0;
 
   if ((c >= '0') && (c <= '9'))
@@ -111,7 +113,7 @@ void Color::set3iv(int* color)
 
 // TODO: move to rendergl.cpp
 
-#include "opengl.hpp"
+#include "opengl.h"
 
 void Color::useClearColor() const
 {

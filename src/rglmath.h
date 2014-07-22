@@ -6,17 +6,18 @@
 //
 // $Id$
 
-
-using namespace std;
-
 #include <cmath>
 #include <cfloat>
+
+using namespace std;
 
 #include "types.h"
 
 #ifndef M_PI
 #define M_PI      3.1415926535897932384626433832795
 #endif
+
+namespace rgl {
 
 namespace math {
 
@@ -156,6 +157,7 @@ public:
   void setIdentity(void);
   void setRotate(const int axis, const float degree);
   void getData(double* dest);
+  void transpose();
 private:
   inline float  val(int row, int column) const { return data[4*column+row]; }
   inline float& ref(int row, int column) { return data[4*column+row]; }
@@ -188,6 +190,18 @@ struct Rect2
   int width, height;
 };
 
+struct Rect2d
+{
+  Rect2d(double in_x, double in_y, double in_w, double in_h)
+  : x(in_x)
+  , y(in_y)
+  , width(in_w)
+  , height(in_h) 
+  { }
+  double x, y;
+  double width, height;
+};
+
 
 //
 // CLASS
@@ -207,5 +221,7 @@ struct PolarCoord
 
 
 typedef Vec4 Vertex4;
+
+} // namespace rgl
 
 #endif /* MATH_H */

@@ -513,3 +513,77 @@ v0.93.963
     imported but not attached.  Similarly, r3dDefaults need not be on
     the search path.
     
+v0.93.975
+  - rgl.texts without a window failed because it queried the window
+    before opening it.
+  - the scene3d() function now records complete information about the
+    bounding box and the background.
+  - rgl declares most of its C++ objects in the global namespace.  
+    Recently this has caused clashes with the igraph package, which 
+    does the same, and which also has a Shape class.  As a temporary 
+    workaround the rgl class has been renamed to rglShape.  A full 
+    rgl namespace will eventually be added, with only the API functions 
+    left in the global namespace.
+    
+v0.93.984
+  - most rgl C++ functions and classes are now in namespace "rgl".  
+    Others have prefix rgl_, with the exception of gl2ps functions,
+    which all have that prefix, and FTGL functions, which generally
+    have an FT prefix.
+  - entry points to the rgl DLL are now registered within the DLL,
+    and on systems that support it, all entry points other than the
+    registration function are hidden.
+  - writeWebGL() and the other write methods did not handle material
+    information properly after 0.93.975.
+    
+v0.93.986
+  - The FTGL functions were mistakenly added to the rgl namespace
+    on some OSX compiles.
+  - Changes have been made to satisfy the stringent requirements of
+    the Solaris compiler.
+    
+v0.93.987
+  - Added clipplanes3d function to implement clip planes.  (Still
+    only partially implemented.)
+    
+v0.93.991
+  - Some cleanup of the declarations (submitted by Karl Millar).
+  
+v0.93.995
+  - Improved the approximation to the surface normal for degenerate
+    grids in surface3d and persp3d.  (Problem found by Graham Griffiths
+    using polar coordinates; all r=0 points were at the same location.)
+  - The new surface normals are now saved in memory, so rgl.attrib
+    will return them even if they were calculated by rgl.
+  - Bounding box calculations for surfaces with user normals were 
+    incorrect.
+  - An array-overrun bug in rgl.attrib() showed up in writeWebGL.  
+    (Reported by Brian Ripley.)
+  - scene3d() now records light settings.
+  
+v0.93.1098
+  - rgl.material() (for textures), rgl.postscript() and rgl.snapshot()
+    now call normalizePath() on filenames, so tilde expansion should
+    be supported.
+  - par3d() could generate an error if an unnamed list was passed in.
+  - material3d() lost settings for textures
+  - internals are updated to be consistent with MacOS 10.9 requirements
+  - fixed a bug in triangulation code:  it failed on locator() input.
+  - The Aqua support now works again, XQuartz is only needed for command
+    line use in Mac OSX.
+    
+v0.94
+  - Added "subscenes", i.e. scenes of objects nested within the 
+    main window.  This affects a lot of other functions as well,
+    which now act either on a single subscene or on the 
+    overall scene.
+  - Allowed the coordinates of the viewport to be set.
+  - Changed the behaviour of pop3d() and rgl.pop():  the type is
+    now ignored if id is non-zero.
+  - par3d("modelMatrix") no longer includes the observer translation
+  - Added configurable mouse wheel actions via par3d() or 
+    rgl.setWheelCallback().
+  - The par3d(), par3dinterp(), and spin3d() functions now
+    have arguments dev and subscene to specify where they apply.
+  - Included a copy of the source to CanvasMatrix.js (used by
+    writeWebGL()) at the request of the Debian administrators.

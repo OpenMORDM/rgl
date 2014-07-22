@@ -1,9 +1,11 @@
 #ifndef RENDER_H
 #define RENDER_H
 
-#include "RenderContext.hpp"
+#include "RenderContext.h"
 
 #include "types.h"
+
+namespace rgl {
 
 //
 // CLASS
@@ -71,5 +73,7 @@ private:
   int nvertex;
   float* arrayptr;
 };
+
+} // namespace rgl
 
 #endif // RENDER_H
