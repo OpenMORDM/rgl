@@ -352,7 +352,9 @@ writeWebGL <- function(dir="webGL", filename=file.path(dir, "index.html"),
     this.prefix="%prefix%";
     this.zoom = 1;
     this.userMatrix = null;
+    this.projMatrix = null;
     this.panCallbacks = [];
+    this.projCallbacks = [];
     this.fovCallbacks = [];
     this.zoomCallbacks = [];
     this.clickCallbacks = [];
@@ -421,9 +423,13 @@ writeWebGL <- function(dir="webGL", filename=file.path(dir, "index.html"),
       '	   this.setZoom(%zoom%);
       this.setFOV(%fov%);', zoom = par3d("zoom"), fov = max(1, min(179, par3d("FOV")))),
     '	   this.userMatrix = new CanvasMatrix4();
+    this.projMatrix = new CanvasMatrix4();
     this.setUserMatrix([',
     inRows(t(par3d("userMatrix")), perrow=4, leadin='	   '),
-    '		]);')
+    '		]);
+    this.setProjMatrix([',
+    inRows(t(par3d("projMatrix")), perrow=4, leadin='	   '),
+    '      ]);')
   
   textureSupport <- subst(
     '	   function getPowerOfTwo(value) {
@@ -1250,7 +1256,8 @@ writeWebGL <- function(dir="webGL", filename=file.path(dir, "index.html"),
                                  var angle = acos( dot/vlen(rotBase)/vlen(rotCurrent) )*180./PI;
                                  var axis = xprod(rotBase, rotCurrent);
                                  saveMat.rotate(angle, axis[0], axis[1], axis[2]);
-                                 self.setUserMatrix(saveMat);	     
+                                 self.setUserMatrix(saveMat);
+                                 self.setProjMatrix(prMatrix);  
                                  drawScene.call(self);
                                  rotBase = screenToVector(x, y);
                                  }
@@ -1276,6 +1283,7 @@ writeWebGL <- function(dir="webGL", filename=file.path(dir, "index.html"),
                                      var rotCurrent = screenToVector(x,height/2);
                                      var angle = (rotCurrent[0] - rotBase[0])*180/PI;
                                      self.setUserMatrix(saveMat);
+                                     self.setProjMatrix(prMatrix);
                                      var rotMat = new CanvasMatrix4();
                                      rotMat.rotate(angle, %h%[0], %h%[1], %h%[2]);
                                      self.userMatrix.multLeft(rotMat);
@@ -1348,8 +1356,11 @@ writeWebGL <- function(dir="webGL", filename=file.path(dir, "index.html"),
     case 0: ev.which = 1; break;
     case 1: 
     case 4: ev.which = 2; break;
-    case 2: ev.which = 3;
+    case 2: ev.which = 3; break;
     }
+
+    if (ev.which == 3) return;
+
     startX = ev.clientX;
     startY = ev.clientY;
     drag = ev.which;
@@ -1363,10 +1374,8 @@ writeWebGL <- function(dir="webGL", filename=file.path(dir, "index.html"),
     
     canvas.onmouseup = function ( ev ){	
     if (ev.button == 0 && Math.abs(ev.clientX - startX) <= 1 && Math.abs(ev.clientY - startY) <= 1) {
-    // broken code, does not compute the relative mouse position correctly
-    //var coords = relMouseCoords(ev);
-    //self.setClick(coords.x, height-coords.y);
-
+    self.setProjMatrix(prMatrix);
+    self.setUserMatrix(self.userMatrix)
     self.setClick(ev.pageX - $("#%prefix%canvas").offset().left,
         ev.pageY - $("#%prefix%canvas").offset().top);
     }
@@ -1403,6 +1412,13 @@ writeWebGL <- function(dir="webGL", filename=file.path(dir, "index.html"),
     this.zoomCallbacks[i](zoom);
     }
     };
+
+    this.setProjMatrix = function(mat){
+    this.projMatrix.load(mat);
+    for (var i = 0; i < this.projCallbacks.length; i++){
+    this.projCallbacks[i](this.projMatrix);
+    }
+    };
     
     this.setUserMatrix = function(mat){
     this.userMatrix.load(mat);
@@ -1435,9 +1451,17 @@ writeWebGL <- function(dir="webGL", filename=file.path(dir, "index.html"),
     this.getUserMatrix = function(){
     return this.userMatrix;
     };
+
+    this.getProjMatrix = function(){
+    return this.projMatrix;
+    };
     
     this.onPan = function(callback){
     this.panCallbacks.push(callback);
+    };
+
+    this.onProj = function(callback){
+    this.projCallbacks.push(callback);
     };
     
     this.onZoom = function(callback){
