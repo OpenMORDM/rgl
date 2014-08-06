@@ -1368,7 +1368,7 @@ writeWebGL <- function(dir="webGL", filename=file.path(dir, "index.html"),
 
     canvas.addEventListener("touchstart", function(e) { e.button=1; canvas.onmousedown(e); }, false);
     canvas.addEventListener("touchend", function(e) { e.button=1; canvas.onmouseup(e); }, false);
-    canvas.addEventListener("touchmove", function(e) { e.button=1; canvas.onmousemove(e); }, false);
+    canvas.addEventListener("touchmove", function(e) { alert(e.pageX + " " + e.pageY); e.button=1; canvas.onmousemove(e); }, false);
     
     var wheelHandler = function(ev) {
     var del = 1.1;
