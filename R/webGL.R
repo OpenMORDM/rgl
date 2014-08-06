@@ -1366,9 +1366,40 @@ writeWebGL <- function(dir="webGL", filename=file.path(dir, "index.html"),
     }
     }
 
-    canvas.addEventListener("touchstart", function(e) { e.button=1; canvas.onmousedown(e); }, false);
-    canvas.addEventListener("touchend", function(e) { e.button=1; canvas.onmouseup(e); }, false);
-    canvas.addEventListener("touchmove", function(e) { alert(e.pageX + " " + e.pageY); e.button=1; canvas.onmousemove(e); }, false);
+    var onTouchStart = function ( ev ){
+    startX = ev.touches[0].pageX;
+    startY = ev.touches[0].pageY;
+    drag = 1
+    var f = mousedown[drag-1];
+    if (f) {
+    var coords = relMouseCoords(ev.touches[0]);
+    f(coords.x, height-coords.y); 
+    ev.preventDefault();
+    }
+    }
+
+    var onTouchEnd = function ( ev ){	
+    //if (ev.button == 0 && Math.abs(ev.clientX - startX) <= 1 && Math.abs(ev.clientY - startY) <= 1) {
+    //self.setProjMatrix(prMatrix);
+    //self.setUserMatrix(self.userMatrix)
+    //self.setClick(ev.pageX - $("#%prefix%canvas").offset().left,
+    //    ev.pageY - $("#%prefix%canvas").offset().top);
+    //}
+    drag = 0;
+    }
+
+    var onTouchMove = function ( ev ){
+    if ( drag == 0 ) return;
+    var f = mousemove[drag-1];
+    if (f) {
+    var coords = relMouseCoords(ev.touches[0]);
+    f(coords.x, height-coords.y);
+    }
+    }
+
+    canvas.addEventListener("touchstart", onTouchStart, false);
+    canvas.addEventListener("touchend", onTouchEnd, false);
+    canvas.addEventListener("touchmove", onTouchMove, false);
     
     var wheelHandler = function(ev) {
     var del = 1.1;
