@@ -1494,7 +1494,8 @@ writeWebGL <- function(dir="webGL", filename=file.path(dir, "index.html"),
                              <canvas id="%prefix%canvas" width="1" height="1"></canvas> 
                              <p id="%prefix%debug">
                              %snapshotimg%
-                             You must enable Javascript to view this page properly.</p>',
+                             </p>
+                             <noscript>You must enable Javascript to view this page properly.</noscript>',
                              prefix, snapshotimg)
   
   getFlags <- function(id, type) {
