@@ -88,7 +88,7 @@ writeWebGL <- function(dir="webGL", filename=file.path(dir, "index.html"),
     '<script src="CanvasMatrix.js" type="text/javascript"></script>
     <canvas id="%prefix%textureCanvas" style="display: none;" width="256" height="256">
     %snapshotimg%
-    Your browser does not support the HTML5 canvas element.</canvas>
+    Your browser does not support the HTML5 canvas element.  This website works best in the latest versions of <a href="http://www.mozilla.org/firefox">Firefox</a>, <a href="http://www.google.com/chrome/browser/">Chrome</a>, <a href="http://www.opera.com">Opera 22+</a>, Safari 8, and Internet Explorer 11.</canvas>
     ', prefix, snapshotimg)
   
   shaders <- function(id, type, flags) {
@@ -394,7 +394,7 @@ writeWebGL <- function(dir="webGL", filename=file.path(dir, "index.html"),
     
     var canvas = document.getElementById("%prefix%canvas");
     if (!window.WebGLRenderingContext){
-    debug("%snapshotimg2% Your browser does not support WebGL. See <a href=\\\"http://get.webgl.org\\\">http://get.webgl.org</a>");
+    debug("%snapshotimg2% Your browser does not support WebGL.  This website works best in the latest versions of <a href=\\\"http://www.mozilla.org/firefox\\\">Firefox</a>, <a href=\\\"http://www.google.com/chrome/browser/\\\">Chrome</a>, <a href=\\\"http://www.opera.com\\\">Opera 22+</a>, Safari 8, and Internet Explorer 11.  See <a href=\\\"http://get.webgl.org\\\">http://get.webgl.org</a> for details.");
     return;
     }
     var gl;
@@ -405,7 +405,7 @@ writeWebGL <- function(dir="webGL", filename=file.path(dir, "index.html"),
     }
     catch(e) {}
     if ( !gl ) {
-    debug("%snapshotimg2% Your browser appears to support WebGL, but did not create a WebGL context.  See <a href=\\\"http://get.webgl.org\\\">http://get.webgl.org</a>");
+    debug("%snapshotimg2% Your browser appears to support WebGL, but did not create a WebGL context.  This website works best in the latest versions of <a href=\\\"http://www.mozilla.org/firefox\\\">Firefox</a>, <a href=\\\"http://www.google.com/chrome/browser/\\\">Chrome</a>, <a href=\\\"http://www.opera.com\\\">Opera 22+</a>, Safari 8, and Internet Explorer 11.  See <a href=\\\"http://get.webgl.org\\\">http://get.webgl.org</a> for details.");
     return;
     }
     var width = %width%;  var height = %height%;
@@ -1495,7 +1495,7 @@ writeWebGL <- function(dir="webGL", filename=file.path(dir, "index.html"),
                              <p id="%prefix%debug">
                              %snapshotimg%
                              </p>
-                             <noscript>You must enable Javascript to view this page properly.</noscript>',
+                             <noscript>You must enable Javascript to view this page properly.  This website works best in the latest versions of <a href="http://www.mozilla.org/firefox">Firefox</a>, <a href="http://www.google.com/chrome/browser/">Chrome</a>, <a href="http://www.opera.com">Opera 22+</a>, Safari 8, and Internet Explorer 11.</noscript>',
                              prefix, snapshotimg)
   
   getFlags <- function(id, type) {
