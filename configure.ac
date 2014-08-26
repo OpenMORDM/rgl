@@ -8,7 +8,7 @@
 ##      version of autoconf
 ##
 ##
-## $Id$
+## $Id: configure.ac 1099 2014-07-02 12:53:33Z murdoch $
 ##
 
 AC_PREREQ(2.50)
@@ -110,6 +110,7 @@ if test x$darwin == "xyes" -a "x$enable_cocoa" != "xno" ; then
   AGLLIBS="${LIBS} -framework Cocoa"
   BUILD_AGL_TRUE=""
   if test -e /System/Library/Frameworks/GLKit.framework ; then
+    AGLCPPFLAGS="-I/System/Library/Frameworks/GLKit.framework/Headers ${AGLCPPFLAGS}"
     AGLLIBS="-framework GLKit ${AGLLIBS}"
   fi
 else
@@ -139,6 +140,7 @@ fi
       LIBS="-framework OpenGL -dylib_file /System/Library/Frameworks/OpenGL.framework/Versions/A/Libraries/libGL.dylib:/System/Library/Frameworks/OpenGL.framework/Versions/A/Libraries/libGL.dylib ${LIBS}"
     fi
     if test -e /System/Library/Frameworks/GLKit.framework ; then
+      CPPFLAGS="-I/System/Library/Frameworks/GLKit.framework/Headers ${CPPFLAGS}"
       LIBS="-framework GLKit ${LIBS}"
     fi    
     # some X11 installations on OSX 10.5 feature -rpath which doesn't work when used in
