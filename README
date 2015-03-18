@@ -1,3 +1,7 @@
+This fork contains several modifications to RGL primarily for use with shinyRGL:
+  - working branch - Adds ability to click points, some usability improvements
+  - mobile branch - Adds ability to rotate using a touch device
+
 RGL - 3D visualization device system for R using OpenGL
 =======================================================
 
