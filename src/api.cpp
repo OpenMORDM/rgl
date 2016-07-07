@@ -5,11 +5,7 @@
 
 #include "lib.hpp"
 
-extern "C" {
-
 #include "api.h"
-
-} // extern C
 
 #include "DeviceManager.hpp"
 #include "rglview.h"
